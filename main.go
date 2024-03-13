@@ -6,9 +6,55 @@ import (
 	"log"
 
 	_ "github.com/glebarez/go-sqlite"
+	"github.com/gotk3/gotk3/gtk"
 )
 
 func main() {
+
+	gtk.Init(nil)
+	win := initGTKWindow()
+
+	go func() {
+		test()
+	}()
+
+	win.ShowAll()
+
+	gtk.Main()
+
+}
+
+func initGTKWindow() *gtk.Window {
+
+	// Create builder
+	b, err := gtk.BuilderNew()
+	if err != nil {
+		log.Fatal("Error bulder:", err)
+	}
+
+	// Lload the window from the Glade file into the builder
+	err = b.AddFromFile("main.glade")
+	if err != nil {
+		log.Fatal("Error when loading glade file:", err)
+	}
+
+	// We get the object of the main window by ID
+	obj, err := b.GetObject("main-window")
+	if err != nil {
+		log.Fatal("Error:", err)
+	}
+
+	win := obj.(*gtk.Window)
+
+	win.Connect("destroy", func() {
+		gtk.Quit()
+		fmt.Println("Destroy")
+	})
+
+	return win
+}
+
+func test() {
 	database, _ := sql.Open("sqlite", "./songs.db")
 	statement, _ := database.Prepare(`
 	CREATE TABLE songs (
