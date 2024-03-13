@@ -74,8 +74,23 @@ func initGTKWindow() *gtk.Window {
 		}
 	})
 
+	obj, err = builder.GetObject("exit-menu-item")
+	if err != nil {
+		log.Fatal("Could not find menu item 'Exit':", err)
+	}
+
+	exitMenuItem, ok := obj.(*gtk.MenuItem)
+	if !ok {
+		log.Fatal("Could not get menu item 'exit'")
+	}
+
+	exitMenuItem.Connect("activate", func() {
+		gtk.MainQuit()
+		log.Print("Exit")
+	})
+
 	win.Connect("destroy", func() {
-		//gtk.Quit()
+		gtk.MainQuit()
 		fmt.Println("Destroy")
 	})
 
