@@ -27,27 +27,55 @@ func main() {
 func initGTKWindow() *gtk.Window {
 
 	// Create builder
-	b, err := gtk.BuilderNew()
+	builder, err := gtk.BuilderNew()
 	if err != nil {
 		log.Fatal("Error bulder:", err)
 	}
 
 	// Lload the window from the Glade file into the builder
-	err = b.AddFromFile("main.glade")
+	err = builder.AddFromFile("main.glade")
 	if err != nil {
 		log.Fatal("Error when loading glade file:", err)
 	}
 
 	// We get the object of the main window by ID
-	obj, err := b.GetObject("main-window")
+	obj, err := builder.GetObject("main-window")
 	if err != nil {
 		log.Fatal("Error:", err)
 	}
 
-	win := obj.(*gtk.Window)
+	win, ok := obj.(*gtk.Window)
+	if !ok {
+		log.Fatal("Failed to get window")
+	}
+
+	obj, err = builder.GetObject("open-menu-item")
+	if err != nil {
+		log.Fatal("Could not find menu item 'Open':", err)
+	}
+
+	openMenuItem, ok := obj.(*gtk.MenuItem)
+	if !ok {
+		log.Fatal("Could not get menu item 'Open'")
+	}
+
+	openMenuItem.Connect("activate", func() {
+		// dialog, err := gtk.FileChooserDialogNewWith2Buttons("Виберіть файл...", win, gtk.FILE_CHOOSER_ACTION_OPEN, "Скасувати", gtk.RESPONSE_CANCEL, "Відкрити", gtk.RESPONSE_ACCEPT)
+		dialog, err := gtk.FileChooserDialogNewWith2Buttons("Select file", win, gtk.FILE_CHOOSER_ACTION_OPEN, "Cancel", gtk.RESPONSE_CANCEL, "Open", gtk.RESPONSE_ACCEPT)
+		if err != nil {
+			log.Fatal("Failed to create file open dialog:", err)
+		}
+		defer dialog.Destroy()
+
+		response := dialog.Run()
+		if response == gtk.RESPONSE_ACCEPT {
+			filename := dialog.GetFilename()
+			log.Println("Selected file:", filename)
+		}
+	})
 
 	win.Connect("destroy", func() {
-		gtk.Quit()
+		//gtk.Quit()
 		fmt.Println("Destroy")
 	})
 
