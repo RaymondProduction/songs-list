@@ -6,6 +6,7 @@ import (
 	"log"
 
 	_ "github.com/glebarez/go-sqlite"
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -13,10 +14,6 @@ func main() {
 
 	gtk.Init(nil)
 	win := initGTKWindow()
-
-	go func() {
-		test()
-	}()
 
 	win.ShowAll()
 
@@ -31,6 +28,8 @@ func initGTKWindow() *gtk.Window {
 	if err != nil {
 		log.Fatal("Error bulder:", err)
 	}
+
+	populateSongsAsync(builder)
 
 	// Lload the window from the Glade file into the builder
 	err = builder.AddFromFile("main.glade")
@@ -89,16 +88,6 @@ func initGTKWindow() *gtk.Window {
 		log.Print("Exit")
 	})
 
-	obj, err = builder.GetObject("select-song-1")
-
-	if err != nil {
-		log.Fatal("Could not find menu item 'Exit'", err)
-	}
-
-	sel, ok := obj.(*gtk.ComboBoxText)
-
-	sel.AppendText()
-
 	win.Connect("destroy", func() {
 		gtk.MainQuit()
 		fmt.Println("Destroy")
@@ -127,7 +116,7 @@ func loadSongsFromDatabase() ([]string, error) {
 	// 	statement.Exec("Song 4", "Classical", "2023-03-04", "http://example.com/song4")
 	// 	statement.Exec("Song 5", "Electronic", "2023-03-05", "http://example.com/song5")
 
-	database, err := sql.Open("sqlite3", "./songs.db")
+	database, err := sql.Open("sqlite", "./songs.db")
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %v", err)
 	}
@@ -155,4 +144,36 @@ func loadSongsFromDatabase() ([]string, error) {
 	}
 
 	return songs, nil
+}
+
+func populateSongsAsync(builder *gtk.Builder) {
+	go func() {
+		// Loading data from a database in a background thread
+		songs, err := loadSongsFromDatabase()
+		if err != nil {
+			log.Println("Error loading songs", err)
+			return
+		}
+
+		// Safe update of the GUI in the main thread
+		glib.IdleAdd(func() bool {
+			populateComboBox(builder, songs)
+			return false // We return false so that the function is executed only once
+		})
+	}()
+}
+
+func populateComboBox(builder *gtk.Builder, songs []string) {
+	obj, err := builder.GetObject("select-song-1")
+	if err != nil {
+		log.Fatal("Could not find 'select-song-1'", err)
+	}
+	sel, ok := obj.(*gtk.ComboBoxText)
+	if !ok {
+		log.Fatal("Failed to get 'select-song-1' as ComboBoxText")
+	}
+
+	for _, name := range songs {
+		sel.AppendText(name)
+	}
 }
