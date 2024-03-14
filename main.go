@@ -77,7 +77,10 @@ func initGTKWindow() *gtk.Window {
 
 		response := dialog.Run()
 		if response == gtk.RESPONSE_ACCEPT {
-			currentDatabasePath := dialog.GetFilename()
+			// It is important to note that using := in a block of code where a variable has already
+			// been declared at a higher visibility level will create a new local variable with the same name.
+			// This new declaration will shadow the original variable within this code block.
+			currentDatabasePath = dialog.GetFilename()
 			getComboboxById("select-song-1", builder).RemoveAll()
 			getComboboxById("select-song-2", builder).RemoveAll()
 			getComboboxById("select-song-3", builder).RemoveAll()
