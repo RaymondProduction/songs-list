@@ -211,14 +211,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxText">
+                  <object class="GtkComboBoxText" id="select-song-2">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <items>
-                      <item translatable="yes">Value 1</item>
-                      <item translatable="yes">Value 2</item>
-                      <item translatable="yes">Value 3</item>
-                    </items>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -227,14 +222,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxText">
+                  <object class="GtkComboBoxText" id="select-song-3">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <items>
-                      <item translatable="yes">Value 1</item>
-                      <item translatable="yes">Value 2</item>
-                      <item translatable="yes">Value 3</item>
-                    </items>
                   </object>
                   <packing>
                     <property name="expand">True</property>
