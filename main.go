@@ -16,9 +16,15 @@ var currentDatabasePath = "./songs.db"
 func main() {
 
 	gtk.Init(nil)
+
+	settings, err := gtk.SettingsGetDefault()
+	if err == nil {
+		settings.SetProperty("gtk-application-prefer-dark-theme", true)
+	}
+
 	win := initGTKWindow()
 
-	setColorWindow(win)
+	//	setColorWindow(win)
 
 	win.ShowAll()
 
