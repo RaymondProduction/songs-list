@@ -1,0 +1,29 @@
+/* dark-theme.css */
+window {
+    background-color: #333333;
+    /* Dark background */
+    color: #FFFFFF;
+    /* White text */
+}
+
+button {
+    background-color: #555555;
+    /* Dark gray buttons */
+    color: #FFFFFF;
+    /* White text on buttons */
+    border: 1px solid #777777;
+    /* Border for buttons */
+    padding: 5px 10px;
+    /* Padding inside buttons */
+}
+
+entry {
+    background-color: #555555;
+    /* Background color for text fields */
+    color: #FFFFFF;
+    /* Text color in text fields */
+    border-radius: 5px;
+    /* Rounded corners for text fields */
+    padding: 5px;
+    /* Padding inside text fields */
+}

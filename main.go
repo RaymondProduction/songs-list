@@ -214,7 +214,7 @@ func setColorWindow(win *gtk.Window) {
 		log.Fatal("Failed to create CSS provider:", err)
 	}
 
-	cssPath, err := filepath.Abs("styles.css")
+	cssPath, err := filepath.Abs("dark-theme.css")
 	if err != nil {
 		log.Fatal("Failed to get absolute path to CSS file:", err)
 	}
