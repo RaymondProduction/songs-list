@@ -17,6 +17,8 @@ func main() {
 	gtk.Init(nil)
 	win := initGTKWindow()
 
+	setColorWindow(win)
+
 	win.ShowAll()
 
 	gtk.Main()
@@ -202,4 +204,24 @@ func getComboboxById(widgetID string, builder *gtk.Builder) *gtk.ComboBoxText {
 	}
 
 	return comboBoxText
+}
+
+func setColorWindow(win *gtk.Window) {
+	// Creating a new CSS provider.
+	cssProvider, err := gtk.CssProviderNew()
+	if err != nil {
+		log.Fatal("Failed to create CSS provider:", err)
+	}
+
+	// Adding CSS rules. In this case, we change the background color of the window to light blue.
+	css := "window {background-color: #ADD8E6;}"
+	err = cssProvider.LoadFromData(css)
+	if err != nil {
+		log.Fatal("Failed to load CSS data:", err)
+	}
+
+	// Adding CSS styles to the window.
+	screen := win.GetScreen()
+	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
 }
