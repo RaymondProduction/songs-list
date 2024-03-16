@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"path/filepath"
 
 	_ "github.com/glebarez/go-sqlite"
 	"github.com/gotk3/gotk3/glib"
@@ -213,11 +214,14 @@ func setColorWindow(win *gtk.Window) {
 		log.Fatal("Failed to create CSS provider:", err)
 	}
 
-	// Adding CSS rules. In this case, we change the background color of the window to light blue.
-	css := "window {background-color: #ADD8E6;}"
-	err = cssProvider.LoadFromData(css)
+	cssPath, err := filepath.Abs("styles.css")
 	if err != nil {
-		log.Fatal("Failed to load CSS data:", err)
+		log.Fatal("Failed to get absolute path to CSS file:", err)
+	}
+
+	err = cssProvider.LoadFromPath(cssPath)
+	if err != nil {
+		log.Fatal("Failed to load CSS from file:", err)
 	}
 
 	// Adding CSS styles to the window.
