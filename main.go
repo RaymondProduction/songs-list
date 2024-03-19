@@ -17,14 +17,9 @@ func main() {
 
 	gtk.Init(nil)
 
-	settings, err := gtk.SettingsGetDefault()
-	if err == nil {
-		settings.SetProperty("gtk-application-prefer-dark-theme", true)
-	}
-
 	win := initGTKWindow()
 
-	//	setColorWindow(win)
+	setDarkMode(win, true)
 
 	win.ShowAll()
 
@@ -213,14 +208,27 @@ func getComboboxById(widgetID string, builder *gtk.Builder) *gtk.ComboBoxText {
 	return comboBoxText
 }
 
-func setColorWindow(win *gtk.Window) {
+func setDarkMode(win *gtk.Window, isDark bool) {
+
+	// set dark theme
+	settings, err := gtk.SettingsGetDefault()
+	if err == nil {
+		settings.SetProperty("gtk-application-prefer-dark-theme", isDark)
+	}
+
 	// Creating a new CSS provider.
 	cssProvider, err := gtk.CssProviderNew()
 	if err != nil {
 		log.Fatal("Failed to create CSS provider:", err)
 	}
 
-	cssPath, err := filepath.Abs("extracted_files/org/gnome/theme/gtk-dark.css")
+	themePostfix := ""
+
+	if isDark {
+		themePostfix = "-dark"
+	}
+
+	cssPath, err := filepath.Abs("themes/org/gnome/theme/gtk" + themePostfix + ".css")
 	if err != nil {
 		log.Fatal("Failed to get absolute path to CSS file:", err)
 	}
