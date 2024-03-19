@@ -12,6 +12,7 @@ import (
 )
 
 var currentDatabasePath = "./songs.db"
+var isDark = false
 
 func main() {
 
@@ -19,7 +20,7 @@ func main() {
 
 	win := initGTKWindow()
 
-	setDarkMode(win, true)
+	setColorTheme(win)
 
 	win.ShowAll()
 
@@ -93,6 +94,21 @@ func initGTKWindow() *gtk.Window {
 		}
 	})
 
+	obj, err = builder.GetObject("change-theme-menu-item")
+	if err != nil {
+		log.Fatal("Could not find menu item 'Change theme menu':", err)
+	}
+
+	changeThemeMenuItem, ok := obj.(*gtk.MenuItem)
+	if !ok {
+		log.Fatal("Could not get menu item 'Change theme menu'")
+	}
+
+	changeThemeMenuItem.Connect("activate", func() {
+		isDark = !isDark
+		setColorTheme(win)
+	})
+
 	obj, err = builder.GetObject("exit-menu-item")
 	if err != nil {
 		log.Fatal("Could not find menu item 'Exit':", err)
@@ -117,24 +133,6 @@ func initGTKWindow() *gtk.Window {
 }
 
 func loadSongsFromDatabase() ([]string, error) {
-
-	// 	statement, _ := database.Prepare(`
-	// 	CREATE TABLE songs (
-	// 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-	// 		name TEXT NOT NULL,
-	// 		type TEXT,
-	// 		date DATE,
-	// 		URL TEXT
-	// 	);
-	// `)
-	// 	statement.Exec()
-
-	// 	statement, _ = database.Prepare("INSERT INTO songs (name, type, date, URL) VALUES (?, ?, ?, ?);")
-	// 	statement.Exec("Song 1", "Pop", "2023-03-01", "http://example.com/song1")
-	// 	statement.Exec("Song 2", "Rock", "2023-03-02", "http://example.com/song2")
-	// 	statement.Exec("Song 3", "Jazz", "2023-03-03", "http://example.com/song3")
-	// 	statement.Exec("Song 4", "Classical", "2023-03-04", "http://example.com/song4")
-	// 	statement.Exec("Song 5", "Electronic", "2023-03-05", "http://example.com/song5")
 
 	database, err := sql.Open("sqlite", currentDatabasePath)
 	if err != nil {
@@ -208,7 +206,7 @@ func getComboboxById(widgetID string, builder *gtk.Builder) *gtk.ComboBoxText {
 	return comboBoxText
 }
 
-func setDarkMode(win *gtk.Window, isDark bool) {
+func setColorTheme(win *gtk.Window) {
 
 	// set dark theme
 	settings, err := gtk.SettingsGetDefault()
