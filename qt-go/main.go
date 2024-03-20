@@ -30,11 +30,14 @@ func main() {
 	window.SetCentralWidget(widget)
 	layout := widgets.NewQVBoxLayout()
 
+	const labelWidth = 100 // Define a constant width for all labels
+
 	// Adding selectors and labels
 	for i := 1; i <= 3; i++ {
 		// Creating a horizontal layout for each selector and label
 		hLayout := widgets.NewQHBoxLayout()
 		label := widgets.NewQLabel2("Selector "+strconv.Itoa(i)+":", nil, 0)
+		label.SetFixedWidth(labelWidth) // Set the fixed width for the label
 		comboBox := widgets.NewQComboBox(nil)
 		comboBox.AddItems([]string{"Option 1", "Option 2", "Option 3"})
 
@@ -47,6 +50,7 @@ func main() {
 	}
 
 	// Adding a vertical spacer to the end of the vertical layout
+	// Added space for packing selectors near each other.
 	spacer := widgets.NewQSpacerItem(20, 40, widgets.QSizePolicy__Minimum, widgets.QSizePolicy__Expanding)
 	layout.AddItem(spacer)
 
