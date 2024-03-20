@@ -46,6 +46,10 @@ func main() {
 		layout.AddLayout(hLayout, 0)
 	}
 
+	// Adding a vertical spacer to the end of the vertical layout
+	spacer := widgets.NewQSpacerItem(20, 40, widgets.QSizePolicy__Minimum, widgets.QSizePolicy__Expanding)
+	layout.AddItem(spacer)
+
 	// Setting the main layout for the central widget
 	widget.SetLayout(layout)
 
