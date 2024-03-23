@@ -259,9 +259,29 @@ func addNewOption(builder *gtk.Builder) {
 
 	childrenHBox := hBox.GetChildren()
 
+	i := 0
 	childrenHBox.Foreach(func(item interface{}) {
 		childHBox := convertWidgetToBox(item.(*gtk.Widget))
-		addNewLabel(childHBox, "New Label")
+		if i == 0 {
+			label, err := gtk.LabelNew("Label test")
+			if err != nil {
+				log.Fatal("Could not create label:", err)
+			}
+			childHBox.PackStart(label, true, true, 0)
+		} else if i == 1 {
+			combobox, err := gtk.ComboBoxTextNew()
+			if err != nil {
+				log.Fatal("Could not create comboboxtext", err)
+			}
+			childHBox.PackStart(combobox, true, true, 0)
+		} else if i == 2 {
+			button, err := gtk.ButtonNewWithLabel("Button")
+			if err != nil {
+				log.Fatal("Could not create button")
+			}
+			childHBox.PackStart(button, true, true, 0)
+		}
+		i++
 	})
 }
 
