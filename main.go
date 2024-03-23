@@ -50,6 +50,8 @@ func initGTKWindow() *gtk.Window {
 		log.Fatal("Error:", err)
 	}
 
+	addNewOption(builder)
+
 	win, ok := obj.(*gtk.Window)
 	if !ok {
 		log.Fatal("Failed to get window")
@@ -244,21 +246,29 @@ func setColorTheme(win *gtk.Window) {
 
 }
 
-func addNewLabel(builder *gtk.Builder, box *gtk.Box, labelText string) {
+func addNewOption(builder *gtk.Builder) {
+	obj, err := builder.GetObject("content")
+	if err != nil {
+		log.Fatal("Could not find 'Main horizontal box'")
+	}
+	hBox, ok := obj.(*gtk.Box)
+
+	if !ok {
+		log.Fatal("Failed to get 'Main horizontal box'")
+	}
+
+	childrenHBox := hBox.GetChildren()
+
+	fmt.Println(childrenHBox)
+}
+
+func addNewLabel(box *gtk.Box, labelText string) {
 	label, err := gtk.LabelNew(labelText)
 	if err != nil {
 		log.Fatal("Could not create label:", err)
 	}
 
-	obj, err := builder.GetObject("content")
-	if err != nil {
-		log.Fatal(fmt.Sprintf("Could not find '%s'", "content"), err)
-	}
-	box, ok := obj.(*gtk.Box)
-	if !ok {
-		log.Fatal(fmt.Sprintf("Failed to get '%s' as Box", "content"))
-	}
-
 	box.Add(label)
+	//box.PackStart(label, false, true, 0)
 	label.Show()
 }
