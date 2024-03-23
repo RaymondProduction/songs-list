@@ -259,7 +259,10 @@ func addNewOption(builder *gtk.Builder) {
 
 	childrenHBox := hBox.GetChildren()
 
-	fmt.Println(childrenHBox)
+	childrenHBox.Foreach(func(item interface{}) {
+		childHBox := convertWidgetToBox(item.(*gtk.Widget))
+		addNewLabel(childHBox, "New Label")
+	})
 }
 
 func addNewLabel(box *gtk.Box, labelText string) {
@@ -271,4 +274,13 @@ func addNewLabel(box *gtk.Box, labelText string) {
 	box.Add(label)
 	//box.PackStart(label, false, true, 0)
 	label.Show()
+}
+
+func convertWidgetToBox(widget *gtk.Widget) *gtk.Box {
+	if container, isContainer := widget.Cast(); isContainer == nil {
+		if box, ok := container.(*gtk.Box); ok {
+			return box
+		}
+	}
+	return nil
 }
