@@ -55,6 +55,8 @@ func initGTKWindow() *gtk.Window {
 		log.Fatal("Failed to get window")
 	}
 
+	win.SetTitle("Songs")
+
 	obj, err = builder.GetObject("open-menu-item")
 	if err != nil {
 		log.Fatal("Could not find menu item 'Open':", err)
@@ -240,4 +242,23 @@ func setColorTheme(win *gtk.Window) {
 	screen := win.GetScreen()
 	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
+}
+
+func addNewLabel(builder *gtk.Builder, box *gtk.Box, labelText string) {
+	label, err := gtk.LabelNew(labelText)
+	if err != nil {
+		log.Fatal("Could not create label:", err)
+	}
+
+	obj, err := builder.GetObject("content")
+	if err != nil {
+		log.Fatal(fmt.Sprintf("Could not find '%s'", "content"), err)
+	}
+	box, ok := obj.(*gtk.Box)
+	if !ok {
+		log.Fatal(fmt.Sprintf("Failed to get '%s' as Box", "content"))
+	}
+
+	box.Add(label)
+	label.Show()
 }
