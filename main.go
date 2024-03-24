@@ -267,6 +267,7 @@ func addNewOption(builder *gtk.Builder) {
 			if err != nil {
 				log.Fatal("Could not create label:", err)
 			}
+			label.SetHAlign(gtk.ALIGN_START)
 			childHBox.PackStart(label, true, true, 0)
 		} else if i == 1 {
 			combobox, err := gtk.ComboBoxTextNew()
