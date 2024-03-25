@@ -36,7 +36,16 @@ func initGTKWindow() *gtk.Window {
 		log.Fatal("Error bulder:", err)
 	}
 
-	populateSongsAsync(builder)
+	optionIds := make([]string, 0)
+
+	optionIds = append(optionIds, "option-1")
+	optionIds = append(optionIds, "option-2")
+
+	for _, optionId := range optionIds {
+		addNewOption(builder, optionId)
+	}
+
+	populateSongsAsync(builder, optionIds)
 
 	// Lload the window from the Glade file into the builder
 	err = builder.AddFromFile("main.glade")
@@ -49,8 +58,6 @@ func initGTKWindow() *gtk.Window {
 	if err != nil {
 		log.Fatal("Error:", err)
 	}
-
-	addNewOption(builder)
 
 	win, ok := obj.(*gtk.Window)
 	if !ok {
@@ -93,7 +100,7 @@ func initGTKWindow() *gtk.Window {
 			getComboboxById("select-song-1", builder).RemoveAll()
 			getComboboxById("select-song-2", builder).RemoveAll()
 			getComboboxById("select-song-3", builder).RemoveAll()
-			populateSongsAsync(builder)
+			populateSongsAsync(builder, make([]string, 0))
 			log.Println("Selected file:", currentDatabasePath)
 		}
 	})
@@ -168,7 +175,7 @@ func loadSongsFromDatabase() ([]string, error) {
 	return songs, nil
 }
 
-func populateSongsAsync(builder *gtk.Builder) {
+func populateSongsAsync(builder *gtk.Builder, optionIds []string) {
 	go func() {
 		// Loading data from a database in a background thread
 		songs, err := loadSongsFromDatabase()
@@ -182,6 +189,11 @@ func populateSongsAsync(builder *gtk.Builder) {
 			populateComboBox("select-song-1", builder, songs)
 			populateComboBox("select-song-2", builder, songs)
 			populateComboBox("select-song-3", builder, songs)
+
+			for _, optionId := range optionIds {
+				populateComboBox(optionId, builder, songs)
+			}
+
 			return false // We return false so that the function is executed only once
 		})
 	}()
@@ -246,7 +258,7 @@ func setColorTheme(win *gtk.Window) {
 
 }
 
-func addNewOption(builder *gtk.Builder) {
+func addNewOption(builder *gtk.Builder, optionId string) {
 	obj, err := builder.GetObject("content")
 	if err != nil {
 		log.Fatal("Could not find 'Main horizontal box'")
@@ -274,12 +286,27 @@ func addNewOption(builder *gtk.Builder) {
 			if err != nil {
 				log.Fatal("Could not create comboboxtext", err)
 			}
+
+			entry, err := gtk.EntryNew()
+			if err != nil {
+				log.Fatal("Could not create entry:", err)
+			}
+			entry.SetCanFocus(false)
+
+			combobox.Add(entry)
+
+			combobox.SetEntryTextColumn(-1)
+			combobox.SetName(optionId)
+
 			childHBox.PackStart(combobox, true, true, 0)
 		} else if i == 2 {
-			button, err := gtk.ButtonNewWithLabel("Button")
+			button, err := gtk.ButtonNewWithLabel("Add")
 			if err != nil {
 				log.Fatal("Could not create button")
 			}
+
+			setButtonIcon(button, "gtk-add")
+			button.SetAlwaysShowImage(true)
 			childHBox.PackStart(button, true, true, 0)
 		}
 		i++
@@ -304,4 +331,12 @@ func convertWidgetToBox(widget *gtk.Widget) *gtk.Box {
 		}
 	}
 	return nil
+}
+
+func setButtonIcon(button *gtk.Button, iconName string) {
+	icon, err := gtk.ImageNewFromIconName(iconName, gtk.ICON_SIZE_MENU)
+	if err != nil {
+		log.Fatal("Could not create icon:", err)
+	}
+	button.SetImage(icon)
 }
