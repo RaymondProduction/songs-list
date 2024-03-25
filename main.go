@@ -36,6 +36,12 @@ func initGTKWindow() *gtk.Window {
 		log.Fatal("Error bulder:", err)
 	}
 
+	// Lload the window from the Glade file into the builder
+	err = builder.AddFromFile("main.glade")
+	if err != nil {
+		log.Fatal("Error when loading glade file:", err)
+	}
+
 	optionIds := make([]string, 0)
 
 	optionIds = append(optionIds, "option-1")
@@ -45,13 +51,7 @@ func initGTKWindow() *gtk.Window {
 		addNewOption(builder, optionId)
 	}
 
-	populateSongsAsync(builder, optionIds)
-
-	// Lload the window from the Glade file into the builder
-	err = builder.AddFromFile("main.glade")
-	if err != nil {
-		log.Fatal("Error when loading glade file:", err)
-	}
+	//populateSongsAsync(builder, optionIds)
 
 	// We get the object of the main window by ID
 	obj, err := builder.GetObject("main-window")
