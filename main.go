@@ -47,11 +47,7 @@ func initGTKWindow() *gtk.Window {
 	optionIds = append(optionIds, "option-1")
 	optionIds = append(optionIds, "option-2")
 
-	for _, optionId := range optionIds {
-		addNewOption(builder, optionId)
-	}
-
-	//populateSongsAsync(builder, optionIds)
+	populateSongsAsync(builder, optionIds)
 
 	// We get the object of the main window by ID
 	obj, err := builder.GetObject("main-window")
@@ -186,12 +182,13 @@ func populateSongsAsync(builder *gtk.Builder, optionIds []string) {
 
 		// Safe update of the GUI in the main thread
 		glib.IdleAdd(func() bool {
-			populateComboBox("select-song-1", builder, songs)
-			populateComboBox("select-song-2", builder, songs)
-			populateComboBox("select-song-3", builder, songs)
+			populateComboBoxByWidgetId("select-song-1", builder, songs)
+			populateComboBoxByWidgetId("select-song-2", builder, songs)
+			populateComboBoxByWidgetId("select-song-3", builder, songs)
 
 			for _, optionId := range optionIds {
-				populateComboBox(optionId, builder, songs)
+				addNewOption(builder, optionId)
+				//populateComboBox(addNewOption(builder, optionId), builder, songs)
 			}
 
 			return false // We return false so that the function is executed only once
@@ -199,9 +196,16 @@ func populateSongsAsync(builder *gtk.Builder, optionIds []string) {
 	}()
 }
 
-func populateComboBox(widgetID string, builder *gtk.Builder, songs []string) {
+func populateComboBoxByWidgetId(widgetID string, builder *gtk.Builder, songs []string) {
 
 	comboBoxText := getComboboxById(widgetID, builder)
+
+	for _, name := range songs {
+		comboBoxText.AppendText(name)
+	}
+}
+
+func populateComboBox(comboBoxText *gtk.ComboBoxText, builder *gtk.Builder, songs []string) {
 
 	for _, name := range songs {
 		comboBoxText.AppendText(name)
@@ -258,7 +262,10 @@ func setColorTheme(win *gtk.Window) {
 
 }
 
-func addNewOption(builder *gtk.Builder, optionId string) {
+func addNewOption(builder *gtk.Builder, optionId string) *gtk.ComboBoxText {
+
+	var comboboxText *gtk.ComboBoxText
+
 	obj, err := builder.GetObject("content")
 	if err != nil {
 		log.Fatal("Could not find 'Main horizontal box'")
@@ -282,7 +289,7 @@ func addNewOption(builder *gtk.Builder, optionId string) {
 			label.SetHAlign(gtk.ALIGN_START)
 			childHBox.PackStart(label, true, true, 0)
 		} else if i == 1 {
-			combobox, err := gtk.ComboBoxTextNew()
+			comboboxText, err = gtk.ComboBoxTextNew()
 			if err != nil {
 				log.Fatal("Could not create comboboxtext", err)
 			}
@@ -293,12 +300,13 @@ func addNewOption(builder *gtk.Builder, optionId string) {
 			}
 			entry.SetCanFocus(false)
 
-			combobox.Add(entry)
+			comboboxText.Add(entry)
 
-			combobox.SetEntryTextColumn(-1)
-			combobox.SetName(optionId)
+			comboboxText.SetEntryTextColumn(-1)
+			comboboxText.SetName(optionId)
+			fmt.Println(optionId)
 
-			childHBox.PackStart(combobox, true, true, 0)
+			childHBox.PackStart(comboboxText, true, true, 0)
 		} else if i == 2 {
 			button, err := gtk.ButtonNewWithLabel("Add")
 			if err != nil {
@@ -311,6 +319,8 @@ func addNewOption(builder *gtk.Builder, optionId string) {
 		}
 		i++
 	})
+
+	return comboboxText
 }
 
 func addNewLabel(box *gtk.Box, labelText string) {
