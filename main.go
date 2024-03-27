@@ -47,7 +47,14 @@ func initGTKWindow() *gtk.Window {
 	optionIds = append(optionIds, "option-1")
 	optionIds = append(optionIds, "option-2")
 
-	populateSongsAsync(builder, optionIds)
+	options := make([]*gtk.ComboBoxText, 0)
+
+	for _, optionId := range optionIds {
+		a := addNewOption(builder, optionId)
+		options = append(options, a)
+	}
+
+	populateSongsAsync(builder, options)
 
 	// We get the object of the main window by ID
 	obj, err := builder.GetObject("main-window")
@@ -171,7 +178,7 @@ func loadSongsFromDatabase() ([]string, error) {
 	return songs, nil
 }
 
-func populateSongsAsync(builder *gtk.Builder, optionIds []string) {
+func populateSongsAsync(builder *gtk.Builder, options []*gtk.ComboBoxText) {
 	go func() {
 		// Loading data from a database in a background thread
 		songs, err := loadSongsFromDatabase()
@@ -185,11 +192,6 @@ func populateSongsAsync(builder *gtk.Builder, optionIds []string) {
 			populateComboBoxByWidgetId("select-song-1", builder, songs)
 			populateComboBoxByWidgetId("select-song-2", builder, songs)
 			populateComboBoxByWidgetId("select-song-3", builder, songs)
-
-			for _, optionId := range optionIds {
-				addNewOption(builder, optionId)
-				//populateComboBox(addNewOption(builder, optionId), builder, songs)
-			}
 
 			return false // We return false so that the function is executed only once
 		})
