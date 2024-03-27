@@ -103,7 +103,7 @@ func initGTKWindow() *gtk.Window {
 			getComboboxById("select-song-1", builder).RemoveAll()
 			getComboboxById("select-song-2", builder).RemoveAll()
 			getComboboxById("select-song-3", builder).RemoveAll()
-			populateSongsAsync(builder, make([]string, 0))
+			populateSongsAsync(builder, make([]*gtk.ComboBoxText, 0))
 			log.Println("Selected file:", currentDatabasePath)
 		}
 	})
@@ -192,6 +192,10 @@ func populateSongsAsync(builder *gtk.Builder, options []*gtk.ComboBoxText) {
 			populateComboBoxByWidgetId("select-song-1", builder, songs)
 			populateComboBoxByWidgetId("select-song-2", builder, songs)
 			populateComboBoxByWidgetId("select-song-3", builder, songs)
+
+			for _, option := range options {
+				populateComboBox(option, builder, songs)
+			}
 
 			return false // We return false so that the function is executed only once
 		})
